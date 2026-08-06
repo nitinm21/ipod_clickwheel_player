@@ -1,0 +1,33 @@
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "iPod",
+  description: "Offline click-wheel music player",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "iPod",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#F2F1EC",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}

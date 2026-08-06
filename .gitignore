@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# vercel
+.vercel
+
+# env
+.env
+.env.local
+.env*.local
+
+# sync CLI working files (audio never touches git)
+downloads/
+*.m4a
+
+# misc
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts

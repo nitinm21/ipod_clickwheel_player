@@ -1,0 +1,37 @@
+:root {
+  /* Device body */
+  --face: #f2f1ec;
+  --face-edge: #d9d8d2;
+  --wheel: #dcddd8;
+  --wheel-label: #9fa29e;
+  --wheel-line: #c4c5c0;
+  --button: #f2f1ec;
+
+  /* The LCD (signature) */
+  --lcd: #c9d5c4;
+  --lcd-glow: #d6e2d0;
+  --pixel: #1b211c;
+  --lcd-bezel: #3a3c38;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background: radial-gradient(ellipse at center, var(--face) 60%, var(--face-edge) 100%);
+  color: var(--pixel);
+  font-family: system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
