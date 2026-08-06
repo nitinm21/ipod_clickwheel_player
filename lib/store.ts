@@ -73,6 +73,35 @@ export type LibraryState = {
   offline: boolean;
 };
 
+/**
+ * Priority download of one song with byte-level progress (tapping an
+ * uncached song online, §3.5 V3). Returns false on any failure.
+ */
+export async function downloadWithProgress(
+  song: Song,
+  onProgress: (frac: number) => void
+): Promise<boolean> {
+  try {
+    const res = await fetch(song.url);
+    if (!res.ok || !res.body) return false;
+    const total = Number(res.headers.get("content-length")) || song.size || 1;
+    const reader = res.body.getReader();
+    const chunks: BlobPart[] = [];
+    let received = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.length;
+      onProgress(Math.min(1, received / total));
+    }
+    await putAudio(song.id, new Blob(chunks, { type: "audio/mp4" }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const RETRY_INTERVAL_MS = 60_000;
 
 /**

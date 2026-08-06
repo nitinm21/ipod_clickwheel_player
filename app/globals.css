@@ -1,3 +1,9 @@
+@font-face {
+  font-family: "ChicagoFLF";
+  src: url("/fonts/ChicagoFLF.woff2") format("woff2");
+  font-display: block;
+}
+
 :root {
   /* Device body */
   --face: #f2f1ec;
@@ -12,6 +18,8 @@
   --lcd-glow: #d6e2d0;
   --pixel: #1b211c;
   --lcd-bezel: #3a3c38;
+
+  --lcd-font: "ChicagoFLF", "Chicago", "Charcoal", system-ui;
 }
 
 * {
@@ -29,9 +37,237 @@ body {
 body {
   background: radial-gradient(ellipse at center, var(--face) 60%, var(--face-edge) 100%);
   color: var(--pixel);
-  font-family: system-ui, sans-serif;
+  font-family: var(--lcd-font);
+  font-weight: 700;
+  font-synthesis: none;
+  -webkit-font-smoothing: none;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overflow: hidden;
+}
+
+/* ---- LCD type scale (§3.3) — the only sizes that exist ---- */
+.lcd-title { font-size: 16px; line-height: 22px; }
+.lcd-row   { font-size: 16px; line-height: 28px; }
+.lcd-big   { font-size: 20px; line-height: 26px; }
+.lcd-small { font-size: 12px; line-height: 16px; }
+
+/* ---- Device layout ---- */
+.device {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---- Screen chrome (§3.4) ---- */
+.screen {
+  width: min(88vw, 360px);
+  aspect-ratio: 5 / 4;
+  border: 2px solid var(--lcd-bezel);
+  border-radius: 6px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+  background: var(--lcd);
+  flex-shrink: 0;
+}
+
+.lcd {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  outline: 1px solid var(--pixel);
+  outline-offset: -1px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lcd-glow {
+  position: absolute;
+  inset: 0 0 80% 0;
+  background: linear-gradient(to bottom, var(--lcd-glow), transparent);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.lcd-header {
+  height: 26px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--pixel);
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hdr-left { width: 24px; display: flex; justify-content: center; }
+.hdr-title { flex: 1; text-align: center; }
+.hdr-right { width: 30px; display: flex; justify-content: center; }
+
+.lcd-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---- Menu rows (§3.5) ---- */
+.rows { position: relative; }
+
+.row {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.row.selected {
+  background: var(--pixel);
+  color: var(--lcd);
+}
+
+.row.flash {
+  animation: rowflash 240ms steps(1) 1;
+}
+
+@keyframes rowflash {
+  0%   { background: var(--pixel); color: var(--lcd); }
+  25%  { background: transparent;  color: var(--pixel); }
+  50%  { background: var(--pixel); color: var(--lcd); }
+  75%  { background: transparent;  color: var(--pixel); }
+}
+
+.row-label { flex: 1; overflow: hidden; }
+.row-right { flex-shrink: 0; margin-left: 8px; display: flex; align-items: center; }
+
+.marquee { overflow: hidden; white-space: nowrap; }
+.marquee > span { display: inline-block; will-change: transform; }
+
+/* ---- Scrollbar (§3.5 V2) ---- */
+.scrollbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 7px;
+  border: 1px solid var(--pixel);
+}
+
+.scrollbar-thumb {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: var(--pixel);
+}
+
+.status-line {
+  margin-top: auto;
+  text-align: center;
+  padding: 4px 8px 6px;
+}
+
+/* ---- Click wheel (§3.4/3.6) ---- */
+.wheel-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.wheel {
+  position: relative;
+  width: min(78vw, 320px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--wheel-line);
+  background: radial-gradient(circle at 50% 42%, var(--wheel) 60%, #d3d4cf 100%);
+  touch-action: none;
+  cursor: default;
+}
+
+.wheel:focus-visible {
+  outline: 2px solid var(--pixel);
+  outline-offset: 4px;
+}
+
+.wheel-center {
+  position: absolute;
+  left: 31%;
+  top: 31%;
+  width: 38%;
+  height: 38%;
+  border-radius: 50%;
+  border: 1px solid var(--wheel-line);
+  background: var(--button);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.12), inset 0 -2px 4px rgba(255, 255, 255, 0.7);
+}
+
+.wheel-label {
+  position: absolute;
+  color: var(--wheel-label);
+  font-family: system-ui, sans-serif;
+  font-weight: 700;
+  border: 0;
+  background: none;
+  padding: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.wheel-label.pressed { color: var(--pixel); }
+
+.wheel-label.menu { top: 6%; left: 50%; transform: translateX(-50%); font-size: 13px; letter-spacing: 0.12em; }
+.wheel-label.prev { left: 6%; top: 50%; transform: translateY(-50%); font-size: 16px; }
+.wheel-label.next { right: 6%; top: 50%; transform: translateY(-50%); font-size: 16px; }
+.wheel-label.play { bottom: 6%; left: 50%; transform: translateX(-50%); font-size: 16px; }
+
+/* ---- Now Playing (§3.5 V3) ---- */
+.np {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  min-height: 0;
+}
+
+.np-meta { display: flex; justify-content: space-between; }
+
+.np-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.np-progress {
+  height: 10px;
+  border: 1px solid var(--pixel);
+  margin-top: 4px;
+}
+
+.np-progress-fill { height: 100%; background: var(--pixel); }
+
+.np-times { display: flex; justify-content: space-between; margin-top: 4px; }
+
+/* ---- Empty library (§3.5 V2) ---- */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 8px;
 }
