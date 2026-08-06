@@ -45,6 +45,30 @@ export function sortByTitle(library: Song[]): Song[] {
 }
 
 const ID_PATTERN = /^[A-Za-z0-9_-]{11}$/;
+const URL_ID = /(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?[^\s"'<>]*?v=|shorts\/|embed\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/g;
+
+/**
+ * Pull every YouTube video ID out of arbitrary pasted text (URLs in any
+ * common shape, plus bare 11-char IDs standing alone). Deduped, in order.
+ */
+export function extractVideoIdsFromText(text: string): string[] {
+  const ids: string[] = [];
+  for (const m of text.matchAll(URL_ID)) {
+    if (!ids.includes(m[1])) ids.push(m[1]);
+  }
+  // Bare IDs: only tokens that can't be ordinary words (digit, -, _ or
+  // mixed case), so prose in the paste doesn't produce junk lookups.
+  for (const token of text.split(/\s+/)) {
+    if (
+      ID_PATTERN.test(token) &&
+      (/[\d_-]/.test(token) || (/[a-z]/.test(token) && /[A-Z]/.test(token))) &&
+      !ids.includes(token)
+    ) {
+      ids.push(token);
+    }
+  }
+  return ids;
+}
 
 /**
  * Extract the 11-char video ID from any common YouTube URL shape

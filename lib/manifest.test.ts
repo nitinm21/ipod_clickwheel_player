@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   extractVideoId,
+  extractVideoIdsFromText,
   hasSong,
   removeSong,
   sortByTitle,
@@ -68,5 +69,36 @@ describe("extractVideoId", () => {
     expect(extractVideoId("https://vimeo.com/12345")).toBeNull();
     expect(extractVideoId("not a link")).toBeNull();
     expect(extractVideoId("https://www.youtube.com/watch?v=short")).toBeNull();
+  });
+});
+
+describe("extractVideoIdsFromText", () => {
+  it("finds links buried in messy pasted text", () => {
+    const text = `
+      check these out!
+      https://youtu.be/x9VXlf0j980?si=4P3-vm2O5zctCp62
+      and this one https://www.youtube.com/watch?v=RNGPAfgubW4 is great
+      shorts too: youtube.com/shorts/dQw4w9WgXcQ
+    `;
+    expect(extractVideoIdsFromText(text)).toEqual([
+      "x9VXlf0j980",
+      "RNGPAfgubW4",
+      "dQw4w9WgXcQ",
+    ]);
+  });
+
+  it("dedupes across URL shapes", () => {
+    const text =
+      "https://youtu.be/dQw4w9WgXcQ https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    expect(extractVideoIdsFromText(text)).toEqual(["dQw4w9WgXcQ"]);
+  });
+
+  it("accepts bare IDs but not ordinary words", () => {
+    expect(extractVideoIdsFromText("dQw4w9WgXcQ")).toEqual(["dQw4w9WgXcQ"]);
+    expect(extractVideoIdsFromText("informative discussions considered")).toEqual([]);
+  });
+
+  it("returns empty for linkless text", () => {
+    expect(extractVideoIdsFromText("no links here, sorry")).toEqual([]);
   });
 });
