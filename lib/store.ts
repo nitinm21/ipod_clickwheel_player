@@ -73,10 +73,15 @@ export type LibraryState = {
   offline: boolean;
 };
 
+const RETRY_INTERVAL_MS = 60_000;
+
 /**
- * The phone sync engine. On start and whenever the network comes back:
- * fetch manifest → diff → delete removed → download missing sequentially.
- * Emits state after every step so the UI can render per-song indicators.
+ * The phone sync engine: fetch manifest → diff → delete removed → download
+ * missing sequentially, emitting state after every step. Re-runs on start,
+ * when the network comes back, when the app is foregrounded, and on a slow
+ * interval — the `online` event alone is unreliable (iOS resuming a
+ * backgrounded PWA, DevTools emulation), and the interval also picks up
+ * library changes made from the laptop while the app sits open.
  * Returns a stop function.
  */
 export function startSyncEngine(
@@ -125,11 +130,18 @@ export function startSyncEngine(
     }
   }
 
-  const onOnline = () => void run();
-  window.addEventListener("online", onOnline);
-  void run();
+  const kick = () => void run();
+  const onVisible = () => {
+    if (document.visibilityState === "visible") kick();
+  };
+  window.addEventListener("online", kick);
+  document.addEventListener("visibilitychange", onVisible);
+  const timer = setInterval(kick, RETRY_INTERVAL_MS);
+  kick();
   return () => {
     stopped = true;
-    window.removeEventListener("online", onOnline);
+    clearInterval(timer);
+    window.removeEventListener("online", kick);
+    document.removeEventListener("visibilitychange", onVisible);
   };
 }
