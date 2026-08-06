@@ -22,7 +22,7 @@ describe("cleanTitle", () => {
 
   it("drops everything after a pipe", () => {
     expect(cleanTitle("Kabira Full Song | Yeh Jawaani Hai Deewani | Pritam")).toBe(
-      "Kabira Full Song"
+      "Kabira"
     );
     expect(cleanTitle("Song Name | Official Video | 4K")).toBe("Song Name");
   });
@@ -31,6 +31,14 @@ describe("cleanTitle", () => {
     expect(cleanTitle("Artist - Song HD")).toBe("Artist - Song");
     expect(cleanTitle("Artist - Song (4K)")).toBe("Artist - Song");
     expect(cleanTitle("Artist - Song [HQ]")).toBe("Artist - Song");
+  });
+
+  it("strips bare trailing video-song phrases", () => {
+    expect(cleanTitle("Aakasha Ishte Video Song")).toBe("Aakasha Ishte");
+    expect(cleanTitle("Song Name Full Video Song")).toBe("Song Name");
+    expect(cleanTitle("Song Name Lyric Video")).toBe("Song Name");
+    expect(cleanTitle("Song Name Official Video")).toBe("Song Name");
+    expect(cleanTitle("Song Name Full Song")).toBe("Song Name");
   });
 
   it("strips trailing M/V", () => {

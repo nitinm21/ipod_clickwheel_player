@@ -33,6 +33,10 @@ const BRACKET_NOISE = new RegExp(
 const TRAILING_FEAT = /\s+(?:feat|ft)\.?\s+.+$/i;
 const STANDALONE_QUALITY = /(?:^|\s)(?:HD|HQ|4K|8K|1080p|720p)(?=\s|$)/gi;
 const TRAILING_MV = /\s+M\/?V\s*$/i;
+// Bare trailing phrases (no brackets): "… Full Video Song", "… Lyric Video",
+// "… Official Video", "… Full Song" — endemic on Indian music uploads.
+const TRAILING_PHRASE =
+  /\s+(?:full\s+)?(?:official\s+)?(?:video|audio|lyric(?:al)?s?|music)\s+(?:video|song|audio)\s*$|\s+full\s+(?:video|song|audio)\s*$|\s+official\s+(?:video|audio)\s*$/i;
 
 export function cleanTitle(raw: string): string {
   let t = raw;
@@ -45,6 +49,7 @@ export function cleanTitle(raw: string): string {
   t = t.replace(TRAILING_FEAT, " ");
   t = t.replace(STANDALONE_QUALITY, " ");
   t = t.replace(TRAILING_MV, " ");
+  t = t.replace(TRAILING_PHRASE, " ");
 
   // Leftover empty brackets and dangling separators.
   t = t.replace(/[(\[]\s*[)\]]/g, " ");

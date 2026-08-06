@@ -20,6 +20,38 @@ import {
 
 const FLASH_MS = 120;
 
+/* Wheel glyphs drawn like the printed originals — Unicode media characters
+   render inconsistently across platforms. */
+function PrevGlyph() {
+  return (
+    <svg width="21" height="12" viewBox="0 0 21 12" fill="currentColor" aria-hidden>
+      <rect x="0" y="1" width="2" height="10" />
+      <path d="M11 1 L3 6 L11 11 Z" />
+      <path d="M20 1 L12 6 L20 11 Z" />
+    </svg>
+  );
+}
+
+function NextGlyph() {
+  return (
+    <svg width="21" height="12" viewBox="0 0 21 12" fill="currentColor" aria-hidden>
+      <path d="M1 1 L9 6 L1 11 Z" />
+      <path d="M10 1 L18 6 L10 11 Z" />
+      <rect x="19" y="1" width="2" height="10" />
+    </svg>
+  );
+}
+
+function PlayPauseGlyph() {
+  return (
+    <svg width="21" height="12" viewBox="0 0 21 12" fill="currentColor" aria-hidden>
+      <path d="M1 0 L11 6 L1 12 Z" />
+      <rect x="14" y="0" width="2.5" height="12" />
+      <rect x="18.5" y="0" width="2.5" height="12" />
+    </svg>
+  );
+}
+
 export default function ClickWheel({
   onRows,
   onZone,
@@ -101,10 +133,10 @@ export default function ClickWheel({
     e.preventDefault();
   };
 
-  const label = (zone: Zone, text: string, aria: string, extra = "") => (
+  const label = (zone: Zone, content: React.ReactNode, aria: string) => (
     <button
       type="button"
-      className={`wheel-label ${zone} ${extra}${pressed === zone ? " pressed" : ""}`}
+      className={`wheel-label ${zone}${pressed === zone ? " pressed" : ""}`}
       aria-label={aria}
       tabIndex={-1}
       onClick={(e) => {
@@ -113,7 +145,7 @@ export default function ClickWheel({
         if (e.detail === 0) fireZone(zone);
       }}
     >
-      {text}
+      {content}
     </button>
   );
 
@@ -132,9 +164,9 @@ export default function ClickWheel({
       data-testid="wheel"
     >
       {label("menu", "MENU", "Menu — go back")}
-      {label("prev", "⏮", "Previous song")}
-      {label("next", "⏭", "Next song")}
-      {label("play", "⏯", "Play or pause")}
+      {label("prev", <PrevGlyph />, "Previous song")}
+      {label("next", <NextGlyph />, "Next song")}
+      {label("play", <PlayPauseGlyph />, "Play or pause")}
       <div className="wheel-center" aria-hidden />
     </div>
   );

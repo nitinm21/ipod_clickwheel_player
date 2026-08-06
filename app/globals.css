@@ -5,19 +5,21 @@
 }
 
 :root {
-  /* Device body */
-  --face: #f2f1ec;
-  --face-edge: #d9d8d2;
-  --wheel: #dcddd8;
-  --wheel-label: #9fa29e;
-  --wheel-line: #c4c5c0;
-  --button: #f2f1ec;
+  /* Device body — black iPod classic graphite */
+  --face-hi: #5c5d61;
+  --face: #46474b;
+  --face-edge: #232427;
+  --wheel: #1a1b1d;
+  --wheel-hi: #27282b;
+  --wheel-label: #e9eaec;
+  --wheel-label-dim: #808184;
+  --button: #2c2d31;
 
-  /* The LCD (signature) */
+  /* The LCD (signature — unchanged, the backlight doesn't care) */
   --lcd: #c9d5c4;
   --lcd-glow: #d6e2d0;
   --pixel: #1b211c;
-  --lcd-bezel: #3a3c38;
+  --lcd-bezel: #1c1d1f;
 
   --lcd-font: "ChicagoFLF", "Chicago", "Charcoal", system-ui;
 }
@@ -35,7 +37,9 @@ body {
 }
 
 body {
-  background: radial-gradient(ellipse at center, var(--face) 60%, var(--face-edge) 100%);
+  background:
+    radial-gradient(130% 70% at 30% -5%, rgba(255, 255, 255, 0.14), transparent 55%),
+    linear-gradient(172deg, var(--face-hi) 0%, var(--face) 45%, var(--face-edge) 100%);
   color: var(--pixel);
   font-family: var(--lcd-font);
   font-weight: 700;
@@ -70,7 +74,10 @@ body {
   aspect-ratio: 5 / 4;
   border: 2px solid var(--lcd-bezel);
   border-radius: 6px;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 1px 4px rgba(0, 0, 0, 0.5);
   background: var(--lcd);
   flex-shrink: 0;
 }
@@ -189,14 +196,18 @@ body {
   width: min(78vw, 320px);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid var(--wheel-line);
-  background: radial-gradient(circle at 50% 42%, var(--wheel) 60%, #d3d4cf 100%);
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: radial-gradient(circle at 50% 36%, var(--wheel-hi), var(--wheel) 72%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05),
+    0 4px 14px rgba(0, 0, 0, 0.35);
   touch-action: none;
   cursor: default;
 }
 
 .wheel:focus-visible {
-  outline: 2px solid var(--pixel);
+  outline: 2px solid var(--wheel-label);
   outline-offset: 4px;
 }
 
@@ -207,29 +218,35 @@ body {
   width: 38%;
   height: 38%;
   border-radius: 50%;
-  border: 1px solid var(--wheel-line);
-  background: var(--button);
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.12), inset 0 -2px 4px rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  background: radial-gradient(circle at 50% 40%, #313236, var(--button) 75%);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.45),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.05);
 }
 
 .wheel-label {
   position: absolute;
   color: var(--wheel-label);
   font-family: system-ui, sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   border: 0;
   background: none;
   padding: 0;
   pointer-events: none;
   transition: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
-.wheel-label.pressed { color: var(--pixel); }
+.wheel-label.pressed { color: var(--wheel-label-dim); }
 
-.wheel-label.menu { top: 6%; left: 50%; transform: translateX(-50%); font-size: 13px; letter-spacing: 0.12em; }
-.wheel-label.prev { left: 6%; top: 50%; transform: translateY(-50%); font-size: 16px; }
-.wheel-label.next { right: 6%; top: 50%; transform: translateY(-50%); font-size: 16px; }
-.wheel-label.play { bottom: 6%; left: 50%; transform: translateX(-50%); font-size: 16px; }
+.wheel-label.menu { top: 7%; left: 50%; transform: translateX(-50%); font-size: 15px; letter-spacing: 0.16em; }
+.wheel-label.prev { left: 7%; top: 50%; transform: translateY(-50%); }
+.wheel-label.next { right: 7%; top: 50%; transform: translateY(-50%); }
+.wheel-label.play { bottom: 7%; left: 50%; transform: translateX(-50%); }
 
 /* ---- Now Playing (§3.5 V3) ---- */
 .np {
